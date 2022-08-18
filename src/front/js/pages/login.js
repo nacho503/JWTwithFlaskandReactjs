@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Context } from "../store/appContext";
+// import { useHistory } from "react-router";
 import rigoImageUrl from "../../img/rigo-baby.jpg";
 import "../../styles/home.css";
 
@@ -7,36 +8,19 @@ export const Login = () => {
   const { store, actions } = useContext(Context);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const token = sessionStorage.getItem("token");
 
   const handleClick = () => {
-    const opts = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-    };
-    fetch(
-      "https://3001-4geeksacade-reactflaskh-vsx4fttk4iv.ws-us61.gitpod.io/api/token",
-      opts
-    )
-      .then((resp) => {
-        if (resp.status === 200) return resp.json();
-        else alert("there was an error");
-      })
-      .then((data) => {
-        sessionStorage.setItem("token", data.access_token);
-      })
-      .catch(console.error("There was an error", error));
+    actions.login(email, password);
   };
+
+  // if (store.token && store.token != "" && store.token != undefined)
+  //   history.push("/");
 
   return (
     <div className="text-center mt-5">
       <h1>Login</h1>
-      {token && token != "" && token != undefined ? (
-        `You are logged in with token: ${token}`
+      {store.token && store.token != "" && store.token != undefined ? (
+        `You are logged in with token: ${store.token}`
       ) : (
         <div>
           <input

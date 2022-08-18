@@ -11,16 +11,32 @@ from flask_jwt_extended import JWTManager
 
 api = Blueprint('api', __name__)
 
+@api.route('/signup', methods=['POST'])
+def create_user():
+    user=User()
+    user.email = request.json.get('email')
+    user.password = request.json.get('password')
+    user.is_active = False
+
+    
+    db.session.add(user) 
+    db.session.commit()
+    return jsonify(user.serialize()),200
+
 
 @api.route("/token", methods=["POST"])
 def token():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
-    if email != "test" or password != "test":
-        return jsonify({"msg": "Bad email or password"}), 401
+    if password  != '' and email != '':
+        user = User.query.filter_by( email = email ).first()
+        if password == user.password:
+            access_token = create_access_token(identity=email)
+            return jsonify(access_token=access_token)
+    # if email != "test" or password != "test":
+    #     return jsonify({"msg": "Bad email or password"}), 401
 
-    access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)
+    
 
 
 @api.route('/hello', methods=['POST', 'GET'])
